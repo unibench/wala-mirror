@@ -1,0 +1,7 @@
+*.class
+.metadata
+com.ibm.wala.core.testdata/bin/
+com.ibm.wala.core.testdata/lib/
+com.ibm.wala.core.tests/bin/
+com.ibm.wala.core/bin/
+com.ibm.wala.util/bin/
