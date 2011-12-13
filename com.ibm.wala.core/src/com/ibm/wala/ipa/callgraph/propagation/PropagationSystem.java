@@ -55,7 +55,7 @@ import com.ibm.wala.util.warnings.Warnings;
 /**
  * System of constraints that define propagation for call graph construction
  */
-public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariable> {
+public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariable> implements IPropagationSystem {
 
   private final static boolean DEBUG = false;
 
@@ -78,7 +78,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
   /**
    * bijection from InstanceKey <=>Integer
    */
-  protected final MutableMapping<InstanceKey> instanceKeys = MutableMapping.make();
+  private final MutableMapping<InstanceKey> instanceKeys = MutableMapping.make();
 
   /**
    * A mapping from IClass -> MutableSharedBitVectorIntSet The range represents the instance keys that correspond to a given class.
@@ -138,7 +138,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
     return new PointerAnalysisImpl(builder, cg, pointsToMap, instanceKeys, pointerKeyFactory, instanceKeyFactory);
   }
 
-  protected void registerFixedSet(PointsToSetVariable p, UnarySideEffect s) {
+  public void registerFixedSet(PointsToSetVariable p, UnarySideEffect s) {
     Set<UnarySideEffect> set = MapUtil.findOrCreateSet(fixedSetMap, p);
     set.add(s);
   }
@@ -173,7 +173,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
    * @return a set of integers representing the instance keys that correspond to a given class. This method creates a new set, which
    *         the caller may bash at will.
    */
-  MutableIntSet cloneInstanceKeysForClass(IClass klass) {
+  public MutableIntSet cloneInstanceKeysForClass(IClass klass) {
     assert klass.getReference() != TypeReference.JavaLangObject;
     MutableIntSet set = class2InstanceKey.get(klass);
     if (set == null) {
@@ -208,7 +208,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
    * 
    * @return an List of instance keys corresponding to the integers in a set
    */
-  List<InstanceKey> getInstances(IntSet set) {
+  public List<InstanceKey> getInstances(IntSet set) {
     LinkedList<InstanceKey> result = new LinkedList<InstanceKey>();
     int i = 0;
     for (IntIterator it = set.intIterator(); it.hasNext(); i++) {
@@ -907,5 +907,9 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
   @Override
   protected PointsToSetVariable[] makeStmtRHS(int size) {
     return new PointsToSetVariable[size];
+  }
+
+  public MutableMapping<InstanceKey> getInstanceKeys() {
+    return instanceKeys;
   }
 }

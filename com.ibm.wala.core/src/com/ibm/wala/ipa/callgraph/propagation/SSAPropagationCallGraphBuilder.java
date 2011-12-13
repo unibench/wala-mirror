@@ -515,7 +515,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
     /**
      * The governing propagation system, into which constraints are added
      */
-    protected final PropagationSystem system;
+    protected final IPropagationSystem system;
 
     /**
      * The basic block currently being processed
@@ -1597,7 +1597,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
             if (constParams != null && constParams[pi] != null) {
               for(int i = 0; i < constParams[pi].length; i++) {
                 keys[pi] = constParams[pi][i];
-                int ii = system.instanceKeys.getMappedIndex(constParams[pi][i]);
+                int ii = system.getInstanceKeys().getMappedIndex(constParams[pi][i]);
                 rec(index+1, rhsIndex, redundant & previousPtrs[index].contains(ii));
               }
             } else {
@@ -1656,7 +1656,7 @@ public abstract class SSAPropagationCallGraphBuilder extends PropagationCallGrap
         int pi = dispatchIndices[i];
         if (constParams != null && constParams[pi] != null) {
           for(int ci = 0; ci < constParams[pi].length; ci++) {
-            previousPtrs[i].add(system.instanceKeys.getMappedIndex(constParams[i][ci]));
+            previousPtrs[i].add(system.getInstanceKeys().getMappedIndex(constParams[i][ci]));
           }
         } else {
           previousPtrs[i].addAll(rhs[ri++].getValue());

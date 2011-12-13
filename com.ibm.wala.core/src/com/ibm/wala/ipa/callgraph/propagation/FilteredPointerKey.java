@@ -25,9 +25,9 @@ public interface FilteredPointerKey extends PointerKey {
 
   public interface TypeFilter extends ContextItem {
 
-    boolean addFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R);
+    boolean addFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R);
 
-    boolean addInverseFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R);
+    boolean addInverseFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R);
 
     boolean isRootFilter();
     
@@ -59,12 +59,12 @@ public interface FilteredPointerKey extends PointerKey {
       return (o instanceof SingleClassFilter) && ((SingleClassFilter) o).getConcreteType().equals(concreteType);
     }
 
-    public boolean addFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       IntSet f = system.getInstanceKeysForClass(concreteType);
       return (f == null) ? false : L.addAllInIntersection(R, f);
     }
 
-    public boolean addInverseFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addInverseFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       IntSet f = system.getInstanceKeysForClass(concreteType);
 
       // SJF: this is horribly inefficient. we really don't want to do
@@ -120,7 +120,7 @@ public interface FilteredPointerKey extends PointerKey {
       return true;
     }
 
-    private IntSet bits(PropagationSystem system) {
+    private IntSet bits(IPropagationSystem system) {
       IntSet f = null;
       for(IClass cls : concreteType) {
         if (f == null) {
@@ -132,12 +132,12 @@ public interface FilteredPointerKey extends PointerKey {
       return f;
     }
     
-    public boolean addFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       IntSet f = bits(system);
       return (f == null) ? false : L.addAllInIntersection(R, f);
     }
 
-    public boolean addInverseFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addInverseFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       IntSet f = bits(system);
 
       // SJF: this is horribly inefficient. we really don't want to do
@@ -177,7 +177,7 @@ public interface FilteredPointerKey extends PointerKey {
       return (o instanceof SingleInstanceFilter) && ((SingleInstanceFilter) o).getInstance().equals(concreteType);
     }
 
-    public boolean addFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       int idx = system.findOrCreateIndexForInstanceKey(concreteType);
       if (R.contains(idx)) {
         if (!L.contains(idx)) {
@@ -189,7 +189,7 @@ public interface FilteredPointerKey extends PointerKey {
       return false;
     }
 
-    public boolean addInverseFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addInverseFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       int idx = system.findOrCreateIndexForInstanceKey(concreteType);
       if (!R.contains(idx) || L.contains(idx)) {
         return L.addAll(R);
@@ -236,11 +236,11 @@ public interface FilteredPointerKey extends PointerKey {
 
       private final PointsToSetVariable L;
 
-      private final PropagationSystem system;
+      private final IPropagationSystem system;
 
       private final boolean sense;
 
-      private UpdateAction(PropagationSystem system, PointsToSetVariable L, boolean sense) {
+      private UpdateAction(IPropagationSystem system, PointsToSetVariable L, boolean sense) {
         this.L = L;
         this.sense = sense;
         this.system = system;
@@ -258,7 +258,7 @@ public interface FilteredPointerKey extends PointerKey {
       }
     }
 
-    public boolean addFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       if (R.getValue() == null) {
         return false;
       } else {
@@ -268,7 +268,7 @@ public interface FilteredPointerKey extends PointerKey {
       }
     }
 
-    public boolean addInverseFiltered(PropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
+    public boolean addInverseFiltered(IPropagationSystem system, PointsToSetVariable L, PointsToSetVariable R) {
       if (R.getValue() == null) {
         return false;
       } else {

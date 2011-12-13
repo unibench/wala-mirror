@@ -11,6 +11,8 @@
 package com.ibm.wala.ipa.callgraph.propagation;
 
 
+import com.ibm.wala.fixedpoint.impl.DefaultFixedPointSolver;
+import com.ibm.wala.fixpoint.IFixedPointSolver;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.MonitorUtil.IProgressMonitor;
 
@@ -21,7 +23,7 @@ public class StandardSolver extends AbstractPointsToSolver {
 
   private static final boolean DEBUG_PHASES = DEBUG || false;
   
-  public StandardSolver(PropagationSystem system, PropagationCallGraphBuilder builder) {
+  public StandardSolver(IFixedPointSolver<PointsToSetVariable> system, PropagationCallGraphBuilder builder) {
     super(system, builder);
   }
 
@@ -72,7 +74,7 @@ public class StandardSolver extends AbstractPointsToSolver {
       getBuilder().addConstraintsFromNewNodes(monitor);
       // Note that we may have added stuff to the
       // worklist; so,
-    } while (!getSystem().emptyWorkList());
+    } while (!getSystem().isSolved());
 
   }
 

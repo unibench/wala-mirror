@@ -13,9 +13,9 @@ package com.ibm.wala.ipa.callgraph.propagation.actors;
 import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointsToSetVariable;
 
-public class PointsToSetActorVariable extends PointsToSetVariable {
-
-  public PointsToSetActorVariable(PointerKey key) {
+public class PointerActor extends PointsToSetVariable {
+  public PointerActor(PointerKey key) {
     super(key);
   }
+  
 }
