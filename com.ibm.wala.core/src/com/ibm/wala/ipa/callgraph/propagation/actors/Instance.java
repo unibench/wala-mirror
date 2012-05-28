@@ -10,12 +10,20 @@
  *******************************************************************************/
 package com.ibm.wala.ipa.callgraph.propagation.actors;
 
-import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
-import com.ibm.wala.ipa.callgraph.propagation.PointsToSetVariable;
+import java.util.Map;
 
-public class PointerActor extends PointsToSetVariable {
-  public PointerActor(PointerKey key) {
-    super(key);
-  }
+import kilim.Task;
+
+import com.ibm.wala.classLoader.IField;
+import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
+import com.ibm.wala.ipa.callgraph.propagation.actors.Pointer.PointerActor;
+import com.ibm.wala.util.intset.MutableMapping;
+
+public class Instance extends Task {
+  private final InstanceKey instanceKey;
+  Map<IField, PointerActor> fields;
   
+  public Instance(InstanceKey instanceKey) {
+    this.instanceKey =instanceKey; 
+  }
 }
