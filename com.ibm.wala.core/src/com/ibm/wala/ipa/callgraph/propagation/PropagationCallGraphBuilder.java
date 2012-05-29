@@ -34,7 +34,6 @@ import com.ibm.wala.ipa.callgraph.ContextSelector;
 import com.ibm.wala.ipa.callgraph.Entrypoint;
 import com.ibm.wala.ipa.callgraph.impl.AbstractRootMethod;
 import com.ibm.wala.ipa.callgraph.impl.ExplicitCallGraph;
-import com.ibm.wala.ipa.callgraph.propagation.actors.ActorPropagationSystem;
 import com.ibm.wala.ipa.callgraph.propagation.rta.RTAContextInterpreter;
 import com.ibm.wala.ipa.cha.IClassHierarchy;
 import com.ibm.wala.ssa.SSAAbstractInvokeInstruction;
@@ -267,9 +266,8 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
     return callGraph;
   }
 
-  protected IPropagationSystem makeSystem(AnalysisOptions options) {
-//    return new PropagationSystem(callGraph, pointerKeyFactory, instanceKeyFactory);
-    return new ActorPropagationSystem(callGraph, pointerKeyFactory, instanceKeyFactory);
+  protected PropagationSystem makeSystem(AnalysisOptions options) {
+    return new PropagationSystem(callGraph, pointerKeyFactory, instanceKeyFactory);
   }
 
   protected abstract IPointsToSolver makeSolver();

@@ -22,7 +22,7 @@ import com.ibm.wala.util.intset.MutableIntSet;
 import com.ibm.wala.util.intset.MutableMapping;
 import com.ibm.wala.util.intset.OrdinalSetMapping;
 
-public interface IPropagationSystem extends IFixedPointSolver<PointsToSetVariable> { 
+public interface IPropagationSystem extends IFixedPointSolver<PointsToSetVariable>{
 
   // bad design
   void setMinEquationsForTopSort(int minEquationsForTopSort);
@@ -70,9 +70,5 @@ public interface IPropagationSystem extends IFixedPointSolver<PointsToSetVariabl
   
   // bad design
   public boolean isUnified(PointerKey result);
-
-  // debug aids
-  void setVerboseInterval(int verboseInterval);
-  void setPeriodicMaintainInterval(int periodicMaintainInterval);
   
 }
