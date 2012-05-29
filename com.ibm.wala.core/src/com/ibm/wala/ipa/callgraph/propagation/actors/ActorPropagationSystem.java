@@ -18,19 +18,19 @@ import com.ibm.wala.classLoader.IClass;
 import com.ibm.wala.fixpoint.AbstractOperator;
 import com.ibm.wala.fixpoint.IFixedPointSystem;
 import com.ibm.wala.fixpoint.UnaryOperator;
-import com.ibm.wala.ipa.callgraph.CallGraph;
+import com.ibm.wala.ipa.callgraph.impl.ExplicitCallGraph;
 import com.ibm.wala.ipa.callgraph.propagation.FilteredPointerKey;
 import com.ibm.wala.ipa.callgraph.propagation.IPropagationSystem;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKeyFactory;
 import com.ibm.wala.ipa.callgraph.propagation.LocalPointerKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
+import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysisImpl;
 import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerKeyFactory;
 import com.ibm.wala.ipa.callgraph.propagation.PointsToMap;
 import com.ibm.wala.ipa.callgraph.propagation.PointsToSetVariable;
 import com.ibm.wala.ipa.callgraph.propagation.PropagationCallGraphBuilder;
-import com.ibm.wala.ipa.callgraph.propagation.PropagationSystem;
 import com.ibm.wala.ipa.callgraph.propagation.UnarySideEffect;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.MonitorUtil.IProgressMonitor;
@@ -39,7 +39,6 @@ import com.ibm.wala.util.intset.IntIterator;
 import com.ibm.wala.util.intset.IntSet;
 import com.ibm.wala.util.intset.MutableIntSet;
 import com.ibm.wala.util.intset.MutableMapping;
-import com.ibm.wala.util.intset.OrdinalSetMapping;
 
 public class ActorPropagationSystem implements IPropagationSystem {
 
@@ -51,37 +50,53 @@ public class ActorPropagationSystem implements IPropagationSystem {
    * object that tracks points-to sets
    */
   protected final PointsToMap pointsToMap = new PointsToMap();
-  
-//  Mailbox<String> 
+  private final ExplicitCallGraph cg;
+  private final PointerKeyFactory pointerKeyFactory;
+  private final InstanceKeyFactory instanceKeyFactory;
+  private ActorFixedPointSystem flowGraph = null;
+  private PointerAnalysis pointerAnalysis;
 
+  // Mailbox<String>
+
+  public ActorPropagationSystem(ExplicitCallGraph callGraph, PointerKeyFactory pointerKeyFactory,
+      InstanceKeyFactory instanceKeyFactory) {
+    this.cg = callGraph;
+    this.pointerKeyFactory = pointerKeyFactory;
+    this.instanceKeyFactory = instanceKeyFactory;
+  }
+
+// this is the object recording the state of the world. it might be that we'll go without it.
   public IFixedPointSystem<PointsToSetVariable> getFixedPointSystem() {
-    // TODO will have to figure out what we consider our fixed point system
-    return null;
+    return flowGraph;
   }
 
   public boolean solve(IProgressMonitor monitor) throws CancelException {
     // TODO Auto-generated method stub
-    
+
     // spawn the finisher actor
-    
-//    while(true) { // wait for the mailbox  
-//      ... do what the message wants
-//    }
-    
+
+    // while(true) { // wait for the mailbox
+    // ... do what the message wants
+    // }
+
     return false;
   }
 
   public boolean isSolved() {
     // TODO Auto-generated method stub
-    return false;
+    return true;
   }
 
-  public PointerAnalysis extractPointerAnalysis(PropagationCallGraphBuilder propagationCallGraphBuilder) {
-    // TODO Auto-generated method stub
-    return null;
+  /**
+   * @return an object that encapsulates the pointer analysis results
+   */
+  public PointerAnalysis extractPointerAnalysis(PropagationCallGraphBuilder builder) {
+    if (pointerAnalysis == null) {
+      pointerAnalysis = new PointerAnalysisImpl(builder, cg, pointsToMap, instanceKeys, pointerKeyFactory, instanceKeyFactory); 
+    }
+    return pointerAnalysis;
   }
-  
-  
+
   // THE CONSTRAINT STUFF
 
   public boolean newConstraint(PointerKey lhs, UnaryOperator<PointsToSetVariable> op, PointerKey rhs) {
@@ -125,7 +140,7 @@ public class ActorPropagationSystem implements IPropagationSystem {
     // TODO Auto-generated method stub
     return null;
   }
-  
+
   public void newSideEffect(AbstractOperator<PointsToSetVariable> op, PointerKey arg0, PointerKey arg1) {
     // TODO Auto-generated method stub
 
@@ -139,12 +154,7 @@ public class ActorPropagationSystem implements IPropagationSystem {
   public void newSideEffect(UnaryOperator<PointsToSetVariable> op, PointerKey arg0) {
     // TODO Auto-generated method stub
   }
-  
-  
-  
-  
-  
-  
+
   public InstanceKey getInstanceKey(int i) {
     return instanceKeys.getMappedObject(i);
   }
@@ -157,7 +167,7 @@ public class ActorPropagationSystem implements IPropagationSystem {
     }
     return result;
   }
-  
+
   /**
    * record that a particular points-to-set is represented implicitly.
    */
@@ -232,7 +242,7 @@ public class ActorPropagationSystem implements IPropagationSystem {
     }
     return result;
   }
-
+  
   /*
    * @see com.ibm.wala.ipa.callgraph.propagation.HeapModel#iteratePointerKeys()
    */
@@ -243,20 +253,28 @@ public class ActorPropagationSystem implements IPropagationSystem {
   public boolean isUnified(PointerKey result) {
     return pointsToMap.isUnified(result);
   }
+  
+  public int getMappedIndexForInstanceKey(InstanceKey ik) {
+    return instanceKeys.getMappedIndex(ik);
+  }
 
   public void setMinEquationsForTopSort(int minEquationsForTopSort) {
-    // TODO figure out a way to remove this method
+    // TODO inoffensive for now. figure out a way to remove this method
   }
 
   public void setTopologicalGrowthFactor(double topologicalGrowthFactor) {
-    // TODO figure out a way to remove this method
+    // TODO inoffensive for now. figure out a way to remove this method
   }
 
   public void setMaxEvalBetweenTopo(int maxEvalBetweenTopo) {
-    // TODO figure out a way to remove this method
+    // TODO inoffensive for now. figure out a way to remove this method
   }
 
-  public int getMappedIndexForInstanceKey(InstanceKey ik) {
-    return instanceKeys.getMappedIndex(ik);
+  public void setVerboseInterval(int verboseInterval) {
+    // TODO inoffensive for now. figure out a way to remove or adapt this method
+  }
+  public void setPeriodicMaintainInterval(int periodicMaintainInterval) {
+    // TODO inoffensive for now. figure out a way to remove or adapt this method
+
   }
 }

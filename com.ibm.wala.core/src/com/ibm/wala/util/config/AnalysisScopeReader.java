@@ -64,7 +64,7 @@ public class AnalysisScopeReader {
     try {
       File scopeFile = (plugIn == null) ? FileProvider.getFile(scopeFileName, javaLoader) : FileProvider.getFileFromPlugin(plugIn,
           scopeFileName);
-      assert scopeFile.exists();
+      assert scopeFile.exists(): scopeFile;
 
       String line;
       // assume the scope file is UTF-8 encoded; ASCII files will also be handled properly

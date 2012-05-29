@@ -32,6 +32,7 @@ import com.ibm.wala.ipa.callgraph.impl.FakeRootMethod;
 import com.ibm.wala.ipa.callgraph.impl.FakeWorldClinitMethod;
 import com.ibm.wala.ipa.callgraph.propagation.ClassBasedInstanceKeys;
 import com.ibm.wala.ipa.callgraph.propagation.IPointsToSolver;
+import com.ibm.wala.ipa.callgraph.propagation.IPropagationSystem;
 import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
 import com.ibm.wala.ipa.callgraph.propagation.PointerAnalysis;
 import com.ibm.wala.ipa.callgraph.propagation.PointerKey;
@@ -407,8 +408,8 @@ public abstract class AbstractRTABuilder extends PropagationCallGraphBuilder {
    * @see com.ibm.wala.ipa.callgraph.propagation.PropagationCallGraphBuilder#makeSystem(com.ibm.wala.ipa.callgraph.AnalysisOptions)
    */
   @Override
-  protected PropagationSystem makeSystem(AnalysisOptions options) {
-    PropagationSystem result = super.makeSystem(options);
+  protected IPropagationSystem makeSystem(AnalysisOptions options) {
+    IPropagationSystem result = super.makeSystem(options);
     result.setVerboseInterval(VERBOSE_INTERVAL);
     result.setPeriodicMaintainInterval(PERIODIC_MAINTAIN_INTERVAL);
     return result;
