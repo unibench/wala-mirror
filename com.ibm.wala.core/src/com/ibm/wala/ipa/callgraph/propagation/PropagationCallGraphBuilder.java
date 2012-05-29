@@ -61,7 +61,7 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
 
   final static boolean DEBUG_ASSIGN = DEBUG_ALL | false;
 
-  final static boolean DEBUG_ARRAY_LOAD = DEBUG_ALL | false;
+  private final static boolean DEBUG_ARRAY_LOAD = DEBUG_ALL | false;
 
   private final static boolean DEBUG_ARRAY_STORE = DEBUG_ALL | false;
 
@@ -118,7 +118,7 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
   /**
    * The system of constraints used to build this graph
    */
-  protected IPropagationSystem system;
+  protected PropagationSystem system;
 
   /**
    * Algorithm used to solve the system of constraints
@@ -163,7 +163,7 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
   /**
    * Algorithmic choice: should the GetfieldOperator and PutfieldOperator cache its previous history to reduce work?
    */
-  final boolean rememberGetPutHistory = true;
+  final private boolean rememberGetPutHistory = true;
 
   /**
    * @param cha governing class hierarchy
@@ -670,7 +670,7 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
     return system.extractPointerAnalysis(this);
   }
 
-  public IPropagationSystem getPropagationSystem() {
+  public PropagationSystem getPropagationSystem() {
     return system;
   }
 
@@ -782,9 +782,6 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
    * Binary op: <dummy>:= ArrayLoad( &lt;arrayref>) Side effect: Creates new equations.
    */
   public final class ArrayLoadOperator extends UnarySideEffect implements IPointerOperator {
-    /**
-     * 
-     */
     protected final MutableIntSet priorInstances = rememberGetPutHistory ? IntSetUtil.make() : null;
 
     @Override
@@ -792,14 +789,14 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
       return "ArrayLoad";
     }
 
-    public ArrayLoadOperator( PointsToSetVariable def) {
+    public ArrayLoadOperator(PointsToSetVariable def) {
       super(def);
       system.registerFixedSet(def, this);
     }
 
     @Override
     public byte evaluate(PointsToSetVariable rhs) {
-      if (PropagationCallGraphBuilder.DEBUG_ARRAY_LOAD) {
+      if (DEBUG_ARRAY_LOAD) {
         PointsToSetVariable def = getFixedSet();
         String S = "EVAL ArrayLoad " + rhs.getPointerKey() + " " + def.getPointerKey();
         System.err.println(S);
@@ -817,7 +814,7 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
       PointsToSetVariable def = getFixedSet();
       final PointerKey dVal = def.getPointerKey();
 
-      final MutableBoolean sideEffect = new PropagationCallGraphBuilder.MutableBoolean();
+      final MutableBoolean sideEffect = new MutableBoolean();
       IntSetAction action = new IntSetAction() {
         public void act(int i) {
           InstanceKey I = system.getInstanceKey(i);
@@ -833,10 +830,10 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
             return;
           }
 
-          if (PropagationCallGraphBuilder.DEBUG_ARRAY_LOAD) {
+          if (DEBUG_ARRAY_LOAD) {
             System.err.println("ArrayLoad add assign: " + dVal + " " + p);
           }
-          sideEffect.b |= system.newFieldRead(dVal, PropagationCallGraphBuilder.assignOperator, p, object);
+          sideEffect.b |= system.newFieldRead(dVal, assignOperator, p, object);
         }
       };
       if (priorInstances != null) {
@@ -871,7 +868,7 @@ public abstract class PropagationCallGraphBuilder implements CallGraphBuilder {
       return true;
     }
   }
-  
+
   /**
    * Binary op: <dummy>:= ArrayStore( &lt;arrayref>) Side effect: Creates new equations.
    */

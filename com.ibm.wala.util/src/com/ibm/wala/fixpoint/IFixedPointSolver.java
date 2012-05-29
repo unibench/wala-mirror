@@ -35,6 +35,4 @@ public interface IFixedPointSolver<T extends IVariable>  {
    *         value of some variable.
    */
   public boolean solve(IProgressMonitor monitor) throws CancelException;
-
-  public boolean isSolved();
 }

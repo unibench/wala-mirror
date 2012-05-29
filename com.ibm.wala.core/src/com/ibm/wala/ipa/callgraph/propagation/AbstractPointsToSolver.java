@@ -11,8 +11,6 @@
 package com.ibm.wala.ipa.callgraph.propagation;
 
 
-import com.ibm.wala.fixedpoint.impl.DefaultFixedPointSolver;
-import com.ibm.wala.fixpoint.IFixedPointSolver;
 import com.ibm.wala.util.CancelException;
 import com.ibm.wala.util.MonitorUtil.IProgressMonitor;
 
@@ -24,17 +22,17 @@ public abstract class AbstractPointsToSolver implements IPointsToSolver {
 
   protected final static boolean DEBUG = false;
 
-  private final IFixedPointSolver<PointsToSetVariable> system;
+  private final PropagationSystem system;
 
   private final PropagationCallGraphBuilder builder;
   
   private final ReflectionHandler reflectionHandler;
 
-  public AbstractPointsToSolver(IFixedPointSolver<PointsToSetVariable> system2, PropagationCallGraphBuilder builder) {
-    if (system2 == null) {
+  public AbstractPointsToSolver(PropagationSystem system, PropagationCallGraphBuilder builder) {
+    if (system == null) {
       throw new IllegalArgumentException("null system");
     }
-    this.system = system2;
+    this.system = system;
     this.builder = builder;
     this.reflectionHandler = new ReflectionHandler(builder);
   }
@@ -52,7 +50,7 @@ public abstract class AbstractPointsToSolver implements IPointsToSolver {
     return reflectionHandler;
   }
 
-  protected IFixedPointSolver<PointsToSetVariable> getSystem() {
+  protected PropagationSystem getSystem() {
     return system;
   }
 }

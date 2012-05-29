@@ -116,7 +116,7 @@ public abstract class AbstractFixedPointSolver<T extends IVariable<?>> implement
   /**
    * @return true iff work list is empty
    */
-  public boolean isSolved() {
+  public boolean emptyWorkList() {
     return workList.isEmpty();
   }
 
