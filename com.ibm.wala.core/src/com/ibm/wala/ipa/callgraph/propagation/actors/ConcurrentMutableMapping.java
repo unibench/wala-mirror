@@ -10,52 +10,53 @@
  *******************************************************************************/
 package com.ibm.wala.ipa.callgraph.propagation.actors;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
-import com.ibm.wala.ipa.callgraph.propagation.InstanceKey;
+import com.ibm.wala.util.collections.HashMapFactory;
 import com.ibm.wala.util.intset.OrdinalSetMapping;
 
-public class _InstanceMap implements OrdinalSetMapping<InstanceKey> {
+public class ConcurrentMutableMapping<T> implements OrdinalSetMapping<T> {
 
   private static final int INITIAL_SIZE = 100;
   private static final int GROWTH_FACTOR = 10;
 
-  InstanceKey[] instanceKeysArray;
-  Instance[] instancesArray;
+  Object[] a;
   int size; // the number of elements currently in the array
 
   /**
    * A mapping from object to Integer.
    */
-  final ConcurrentHashMap<InstanceKey, Integer> map = new ConcurrentHashMap<InstanceKey, Integer>();
+  final ConcurrentHashMap<T, Integer> map = new ConcurrentHashMap<T, Integer>();
 
-  public _InstanceMap() {
-    instanceKeysArray = new InstanceKey[INITIAL_SIZE];
-    instancesArray = new Instance[INITIAL_SIZE];
+  public ConcurrentMutableMapping() {
+    a = new Object[INITIAL_SIZE];
     size = 0;
   }
 
-  public Iterator<InstanceKey> iterator() {
+  public Iterator<T> iterator() {
     return map.keySet().iterator();
   }
 
   @SuppressWarnings("unchecked")
-  public InstanceKey getMappedObject(int n) throws NoSuchElementException {
+  public T getMappedObject(int n) throws NoSuchElementException {
     if(n < size)
-      return (InstanceKey) instanceKeysArray[n];
+      return (T) a[n];
     else {
       synchronized(this) {
         if(n < size)
-          return (InstanceKey) instanceKeysArray[n];
+          return (T) a[n];
         else
           throw new IndexOutOfBoundsException();
       }
     }
   }
 
-  public int getMappedIndex(InstanceKey o) {
+  public int getMappedIndex(T o) {
     Integer integer = map.get(o);
     if(integer == null)
       return -1;
@@ -63,7 +64,7 @@ public class _InstanceMap implements OrdinalSetMapping<InstanceKey> {
       return integer;
   }
 
-  public boolean hasMappedIndex(InstanceKey o) {
+  public boolean hasMappedIndex(T o) {
     return map.containsKey(o);
   }
 
@@ -75,26 +76,19 @@ public class _InstanceMap implements OrdinalSetMapping<InstanceKey> {
     return map.size();
   }
 
-  public synchronized int add(InstanceKey o) {
+  public int add(T o) {
+    synchronized (this) {
       int index = size;
-      if (index >= instanceKeysArray.length) {
-        InstanceKey[] newArray = new InstanceKey[GROWTH_FACTOR * instanceKeysArray.length];
-        Instance[] newInstancesArray = new Instance[GROWTH_FACTOR * instanceKeysArray.length];
-        System.arraycopy(instanceKeysArray, 0, newArray, 0, instanceKeysArray.length);
-        System.arraycopy(instancesArray, 0, newInstancesArray, 0, instanceKeysArray.length);
-        instanceKeysArray = newArray;
-        instancesArray = newInstancesArray;
+      if (index >= a.length) {
+        Object[] newArray = new Object[GROWTH_FACTOR * a.length];
+        System.arraycopy(a, 0, newArray, 0, a.length);
+        a = newArray;
       }
-      instanceKeysArray[index] = o;
+      a[index] = o;
       size++;
       // might be a bad thread interleaving here
       map.put(o, index);
       return index;
-  }
-  
-  public synchronized int addPair(InstanceKey ok, Instance o) {
-    add(ok);
-    instancesArray[size-1] = o;
-    return size;
+    }
   }
 }

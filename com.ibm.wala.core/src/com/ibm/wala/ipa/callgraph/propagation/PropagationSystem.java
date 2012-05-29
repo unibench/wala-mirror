@@ -909,11 +909,7 @@ public class PropagationSystem extends DefaultFixedPointSolver<PointsToSetVariab
     return new PointsToSetVariable[size];
   }
 
-  public int getMappedIndexForInstanceKey(InstanceKey ik) {
-    return instanceKeys.getMappedIndex(ik);
+  public MutableMapping<InstanceKey> getInstanceKeys() {
+    return instanceKeys;
   }
-
-//  public MutableMapping<InstanceKey> getInstanceKeys() {
-//    return instanceKeys;
-//  }
 }

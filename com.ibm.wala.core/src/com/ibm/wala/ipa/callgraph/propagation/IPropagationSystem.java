@@ -56,8 +56,7 @@ public interface IPropagationSystem extends IFixedPointSolver<PointsToSetVariabl
   
   public PointsToSetVariable findOrCreatePointsToSet(PointerKey key);
   
-//  public OrdinalSetMapping<InstanceKey> getInstanceKeys();
-  public int getMappedIndexForInstanceKey(InstanceKey ik);
+  public OrdinalSetMapping<InstanceKey> getInstanceKeys();
   
   public int findOrCreateIndexForInstanceKey(InstanceKey key);
   
