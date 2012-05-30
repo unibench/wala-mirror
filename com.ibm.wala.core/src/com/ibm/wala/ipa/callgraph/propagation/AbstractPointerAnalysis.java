@@ -27,11 +27,11 @@ public abstract class AbstractPointerAnalysis implements PointerAnalysis {
   /**
    * graph representation of pointer-analysis results
    */
-  private HeapGraph heapGraph;
+  protected HeapGraph heapGraph;
   /**
    * Governing call graph.
    */
-  private final CallGraph cg;
+  protected final CallGraph cg;
 
   /**
    * bijection from InstanceKey <=>Integer
