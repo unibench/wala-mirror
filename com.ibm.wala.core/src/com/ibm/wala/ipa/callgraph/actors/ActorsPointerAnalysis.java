@@ -34,7 +34,6 @@ public class ActorsPointerAnalysis extends AbstractPointerAnalysis {
       MutableMapping<InstanceKey> instanceKeys, PointerKeyFactory pointerKeys, InstanceKeyFactory iKeyFactory) {
     super(cg, instanceKeys);
     this.pointsToMap = pointsToMap;
-    // TODO Auto-generated constructor stub
     this.H = new ActorsHeapModel(cg.getClassHierarchy(), pointsToMap, iKeyFactory, pointerKeys);
   }
 
